@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - r-base=4.1
+  - r-essentials
+  - r-tidyverse
+  - r-dplyr
+  - r-ggplot2
+  - r-stringr
+  - r-data.table
