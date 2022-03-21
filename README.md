@@ -51,19 +51,21 @@ Briefly, this script:
 1. Reads in DNAm betas from "ALSPAC/data/genomics/B3421/methylation/B3421/betas/data.Robj"
 2. Subsets CpGs to those used by the DNA methylation age calculator listed in "datMiniAnnotation3.csv" (https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/datMiniAnnotation3.csv). There is 30,084 CpGs in datMiniAnnotation3.csv. ALSPAC contains XXX of these CpGs. For the remaining CpGs with no data in ALSPAC have rows filled in with NA, as specified by the tutorial.
 3. Saves zip compressed csv files for each DNAm collection time point (birth, age 7, 15 and 17 years). In these files each row is a CpG and each column is a participant.
-    - ALSPAC/users/amelia/Data/betas_0.zip
-    - ALSPAC/users/amelia/Data/betas_7.zip
-    - ALSPAC/users/amelia/Data/betas_15.zip
-    - ALSPAC/users/amelia/Data/betas_17.zip
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_0.zip
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_7.zip
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_15.zip
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_17.zip
     
 4. Creates annotation files (.csv) for each respective beta file. These contain column names: Age, Tissue, Female for each participant. Each row is a participant.
-    - ALSPAC/users/amelia/Data/annotation_0.csv
-    - ALSPAC/users/amelia/Data/annotation_7.csv
-    - ALSPAC/users/amelia/Data/annotation_15.csv
-    - ALSPAC/users/amelia/Data/annotation_17.csv
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_0.csv
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_7.csv
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_15.csv
+    - ALSPAC/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_17.csv
 
 ### 4. Upload csv files to DNA methylation age online calculator
 Create an account to submit methylation data (https://dnamage.genetics.ucla.edu/new). Upload zip compressed csv files. **Check the boxes which say "Normalize Data" and "Advanced Analysis"** - see tutorial doc (link at top) for more info on this. Upload corresponding age annotation file. An email is sent when analysis has run with a file for DNA methylation ages and age acceleration values, see the tutorial document for details on output.
+I saved the output to:
+    - genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/
 
 ### 5. Calculate age acceleration using additional covariates (cell count estimates)
 `AgeAccelerationResidual=residuals(lm(DNAmAge~Age))`
