@@ -37,7 +37,7 @@ bkup <- betas
 system("mkdir Input")
 system("
        wget -P Input/ https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/datMiniAnnotation3.csv
-       ls
+       ls Input/
        ")
 
 datMiniAnnotation <- read.csv("Input/datMiniAnnotation3.csv")
