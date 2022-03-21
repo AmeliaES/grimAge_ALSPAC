@@ -24,6 +24,7 @@ ALSPAC participants (n = ~900) had DNA methylation measured in umbilical cord bl
 ## Calculate DNA methylation age and age acceleration in ALSPAC
 ### 1. Make conda environment
 ```
+# Change directory to the location you want to calculate DNAm ages in and have cloned this repo.
 cd /Users/aes/Library/CloudStorage/OneDrive-UniversityofEdinburgh/PhD/Studies/grimAge_ALSPAC
 
 # Check the dependencies
