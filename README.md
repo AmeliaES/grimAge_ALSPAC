@@ -56,7 +56,7 @@ Briefly, this script:
     - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_15.zip
     - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_17.zip
     
-4. Creates annotation files (.csv) for each respective beta file. These contain column names: Subject, Age, Female for each participant. Each row is a participant.
+4. Creates annotation files (.csv) for each respective beta file. These contain column names: Subject, Age, Female for each participant. Each row is a participant (in the same order as the columns in the beta files).
     - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_0.csv
     - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_7.csv
     - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_15.csv
