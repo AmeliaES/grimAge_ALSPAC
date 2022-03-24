@@ -68,6 +68,7 @@ I saved the output to:
     - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/
 
 ### 5. Calculate age acceleration using additional covariates (cell count estimates)
+TODO - make script for this
 `AgeAccelerationResidual=residuals(lm(DNAmAge~Age))`
 Output saved in:
 `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/`
