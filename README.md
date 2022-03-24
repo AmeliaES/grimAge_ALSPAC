@@ -1,9 +1,8 @@
 # Calculate DNA methylation age for ALSPAC participants
 
-## Background information
-*Insert info about what DNA methylation age is*
+An epigenetic clock (DNA methylation age) is a predictor for biological age based on the level of DNA methylation.
 
-Follow instructions from the DNA methylation age calculator (Horvath, 2013) tutorial here: https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/TUTORIALonlineCalculator.pdf. I reccomend reading through this and Horvath (2013) before running scripts.
+Follow instructions from the DNA methylation age calculator (Horvath, 2013) tutorial here: https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/TUTORIALonlineCalculator.pdf. I reccomend reading through this and Horvath (2013) before running below scripts.
 
 DNA methylation ages calculated include:
 - pan tissue clock (Horvath 2013)
@@ -64,14 +63,12 @@ Briefly, this script:
 
 ### 4. Upload csv files to DNA methylation age online calculator
 Create an account to submit methylation data (https://dnamage.genetics.ucla.edu/new). Upload zip compressed csv files. **Check the boxes which say "Normalize Data" and "Advanced Analysis"** - see tutorial doc (link at top) for more info on this. Upload corresponding age annotation file. An email is sent when analysis has run with a file for DNA methylation ages and age acceleration values, see the tutorial document for details on output.
-Output saved to:
-    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_*.csv`
+Output saved to: `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_*.csv`
 
 ### 5. Calculate age acceleration using additional covariates (cell count estimates)
-Cell count esimates were calculated using methods from Houseman et al. (2012). Run `Scripts/age_acc.R` to calculate age acceleration (`AgeAccelerationResidual = residuals(lm(DNAmAge~Age + WBC estimates))`). These residuals are saved as an additonal column called "DNAmGrimAgeAdjWBCAge.
+Cell count esimates were calculated using methods from Houseman et al. (2012). Run `Scripts/age_acc.R` to calculate age acceleration (`AgeAccelerationResidual = residuals(lm(DNAmGrimAge~Age + WBC estimates))`). These residuals are saved as an additonal column called `DNAmGrimAgeAdjWBCAge`. Currently these residuals/age acceleration is calculated only for GrimAge. Could improve this by adjusting for batch effects too (if available in ALSPAC?)
 
-Output saved to:
-    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_acceleration_*.csv`
+Output saved to: `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_acceleration_*.csv`
 
 ## References
 - Horvath S (2013) DNA methylation age of human tissues and cell types. Genome Biol
