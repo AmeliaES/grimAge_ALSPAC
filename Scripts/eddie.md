@@ -45,7 +45,9 @@ cp /exports/eddie/scratch/s1211670/ALSPAC/annotation/* /exports/cmvm/datastore/s
 ls /exports/cmvm/datastore/scs/groups/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/
 ```
 
-4. Now return to the original `README.md` to upload files to the calculator.
+4. Remove `./env` as this is a large directory and we have finished with it on Eddie now.
+
+5. Now return to the original `README.md` to upload files to the calculator.
 
 
 
