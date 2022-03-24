@@ -5,7 +5,7 @@
 # Participant = column of beta file, but row of annotation file
 
 # -------------------------------------------------------
-# Ensure you are connected to "ALSPAC" on "DataStore"
+# Ensure you are connected to "ALSPAC" on "DataStore" (smb://cmvm.datastore.ed.ac.uk/cmvm/scs/groups/ALSPAC)
 # Check R is pointing to the conda env:
 R.home()
 .libPaths()
@@ -15,7 +15,6 @@ library(dplyr)
 library(tidyverse)
 library(stringr)
 library(data.table)
-library(haven)
 
 # Check working directory
 getwd()
@@ -25,6 +24,8 @@ getwd()
 ########################################################
 # Load in DNAm data (R object is called "betas")
 load("/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/betas/data.Robj") # takes a wee while as file is large
+# Or on Eddie:
+#load("/exports/eddie/scratch/s1211670/ALSPAC/data.Robj")
 # Convert matrix to dataframe object
 betas <- as.data.frame(betas)
 # Make a back up copy just in case we make a silly mistake when wrangling 
@@ -50,6 +51,8 @@ head(datMiniAnnotation)
 processBetas <- function(time){
 # Get corresponding time points for betas, ie. was DNAm sampled at birth, age 7, 15 or 17 years?
 load("/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/samplesheet/data.Robj") # R object is called "samplesheet"
+# On eddie:
+# load("/exports/eddie/scratch/s1211670/ALSPAC/sample_sheet_data.Robj")
 
 # Merge these two cols together to get unique individual ID
 samplesheet <- samplesheet %>%
@@ -91,44 +94,94 @@ head(betasList[[1]][,1:10])
 # Subset CpGs to those used to make DNAm age (to make the file smaller)
 # Insert NA for any CpGs (rows) we don't have data for
 
+# Check how many of these CpGs are in ALSPAC:
+lapply(betasList, function(x){
+  nrow(x[x$ProbeID %in% datMiniAnnotation$Name,])
+})
+
+# = 28463
+
+# This is less than the number of CpGs supplied in datMiniAnnotation, 
+# therefore we add NA to rows for these missing CpGs:
+
 betasListSub <- lapply(betasList, function(x){
-                  x[row.names(x) %in% datMiniAnnotation$Name,]
+                  newDF <- x[x$ProbeID %in% datMiniAnnotation$Name,]
+                  missing <- datMiniAnnotation$Name[!datMiniAnnotation$Name %in% x$ProbeID]
+                  missingDF <- data.frame("ProbeID" = missing)
+                  idDF <- data.frame(matrix(NA, nrow = length(missing), ncol = ncol(x)-1))
+                  colnames(idDF) <- colnames(x)[-1]
+                  missingDF <- cbind(missingDF, idDF)
+                  newDF <- rbind(newDF, missingDF)
+                  return(newDF)
                 })
 names(betasListSub) <- timePoints
 
+
 # -------------------------------------------------------
 # See how many CpGs (rows) are in each dataframe
-nrow(datMiniAnnotation) # XX CpGs from the DNAm age calculator
+nrow(datMiniAnnotation) # 30084 CpGs from the DNAm age calculator
 
-lapply(betasList, nrow) 
+lapply(betasList, nrow) # 482855
 
-lapply(betasListSub, nrow) # Should match nrows of datMiniAnnotation
-
+lapply(betasListSub, nrow) # 30084 Should match nrows of datMiniAnnotation
+# :-) yes it does!
 # -------------------------------------------------------
 # Check how many participants (columns) are in each dataframe
 
+lapply(betasListSub, ncol)
+# $cord
+# [1] 906
 
+# $F7
+# [1] 971
+
+# $F17
+# [1] 718
+
+# $TF3
+# [1] 254
 
 # -------------------------------------------------------
 # Save a  csv for betas at each time point
-write.csv(betasListSub$cord, "/Volumes/ALSPAC/users/amelia/Data/betas_0.csv", row.names = FALSE)
-write.csv(betasListSub$F7, "/Volumes/ALSPAC/users/amelia/Data/betas_7.csv", row.names = FALSE)
-write.csv(betasListSub$TF3, "/Volumes/ALSPAC/users/amelia/Data/betas_15.csv", row.names = FALSE)
-write.csv(betasListSub$F17, "/Volumes/ALSPAC/users/amelia/Data/betas_17.csv", row.names = FALSE)
+write.csv(betasListSub$cord, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_0.csv", row.names = FALSE)
+write.csv(betasListSub$F7, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_7.csv", row.names = FALSE)
+write.csv(betasListSub$TF3, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_15.csv", row.names = FALSE)
+write.csv(betasListSub$F17, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_17.csv", row.names = FALSE)
+
+# On eddie:
+# write.csv(betasListSub$cord, "/exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_0.csv", row.names = FALSE)
+# write.csv(betasListSub$F7, "/exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_7.csv", row.names = FALSE)
+# write.csv(betasListSub$TF3, "/exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_15.csv", row.names = FALSE)
+# write.csv(betasListSub$F17, "/exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_17.csv", row.names = FALSE)
+
 
 # -------------------------------------------------------
 # Compress csv files
-system("zip /Volumes/ALSPAC/users/amelia/Data/betas_0.zip /Volumes/ALSPAC/users/amelia/Data/betas_0.csv
-       rm /Volumes/ALSPAC/users/amelia/Data/betas_0.csv")
+system("zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_0.zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_0.csv
+       rm /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_0.csv")
 
-system("zip /Volumes/ALSPAC/users/amelia/Data/betas_7.zip /Volumes/ALSPAC/users/amelia/Data/betas_7.csv
-       rm /Volumes/ALSPAC/users/amelia/Data/betas_7.csv")
+system("zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_7.zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_7.csv
+       rm /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_7.csv")
 
-system("zip /Volumes/ALSPAC/users/amelia/Data/betas_15.zip /Volumes/ALSPAC/users/amelia/Data/betas_15.csv
-       rm /Volumes/ALSPAC/users/amelia/Data/betas_15.csv")
+system("zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_15.zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_15.csv
+       rm /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_15.csv")
 
-system("zip /Volumes/ALSPAC/users/amelia/Data/betas_17.zip /Volumes/ALSPAC/users/amelia/Data/betas_17.csv
-       rm /Volumes/ALSPAC/users/amelia/Data/betas_17.csv")
+system("zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_17.zip /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_17.csv
+       rm /Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/betas_17.csv")
+
+# On eddie:
+# system("zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_0.zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_0.csv
+#        rm /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_0.csv")
+
+# system("zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_7.zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_7.csv
+#        rm /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_7.csv")
+
+# system("zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_15.zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_15.csv
+#        rm /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_15.csv")
+
+# system("zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_17.zip /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_17.csv
+#        rm /exports/eddie/scratch/s1211670/ALSPAC/QC_Betas/betas_17.csv")
+
 
 ########################################################
 # 2. Create an annotation file for each respective beta file
@@ -138,28 +191,65 @@ system("zip /Volumes/ALSPAC/users/amelia/Data/betas_17.zip /Volumes/ALSPAC/users
 # age in years;  female = 1, male = 0
 
 # -------------------------------------------------------
-# Read in data to find age and sex of each participant
-otherData <- read_dta("/Volumes/ALSPAC/data/B3421_Whalley_04Nov2021.dta")
+# Get age (at each time point) and sex for each participant from samplesheet
+annotationFunc <- function(time){
+  # Get corresponding time points for betas, ie. was DNAm sampled at birth, age 7, 15 or 17 years?
+  load("/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/samplesheet/data.Robj") # R object is called "samplesheet"
+  # On eddie:
+  # load("/exports/eddie/scratch/s1211670/ALSPAC/sample_sheet_data.Robj")
 
-library(haven)
-## Some useful haven functions:
-# Get the labels for the col names
-vars <- var_label(data)
-# Get labels of values for each variable
-val_labels(data)
+  # Merge these two cols together to get unique individual ID
+  samplesheet <- samplesheet %>%
+    unite("Subject", c(cidB3421, QLET))
 
-vars[str_detect(names(vars), "FKMS1030")]
-vars[str_detect(vars, "age")]
+  # Get DNAm sample names for the time point of interest
+  samplesheet <- samplesheet %>%
+    filter(!str_detect(Subject, "M")) %>% # this removes DNAm for mothers
+    filter(str_detect(time_code, time)) %>%
+    filter(is.na(duplicate.rm)) %>% # remove duplicates
+    select(c(Subject, age, Sex))
+
+  # Test the order of participants is the same as in the betas file
+  test_match_order <- function(x,y) {
+  if (all(x==y)) print('Perfect match in same order')
+  if (!all(x==y) && all(sort(x)==sort(y))) print('Perfect match in wrong order')
+  if (!all(x==y) && !all(sort(x)==sort(y))) print('No match')
+  }
+
+  test_match_order(colnames(betasListSub[[time]][-1]),samplesheet$Subject)
+
+  # Change column names 
+  colnames(samplesheet)[2:3] <- c("Age", "Female")
+
+  # Recode Female column
+  samplesheet$Female <- recode(samplesheet$Female, "F" = 1, "M" = 0)
+
+  return(samplesheet)
+}
+
 # -------------------------------------------------------
-# Get age and sex for each participant
+timePoints <- c("cord", "F7", "F17",  "TF3")
+annotationsList <- lapply(timePoints , annotationFunc)
+names(annotationsList) <- timePoints
 
-# -------------------------------------------------------
-# Check participants (ie. rows) in same order as column names of beta files (betasListSub)
+# Change age in cord from NA to 0
+annotationsList$cord$Age <- 0
 
+# Check
+lapply(annotationsList, head)
 
 # -------------------------------------------------------
 # Save annotation files for each respective age (eg. ALSPAC/users/amelia/Data/annotation_0.csv)
 
+write.csv(annotationsList$cord, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/annotation_0.csv", row.names = FALSE)
+write.csv(annotationsList$F7, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/annotation_7.csv", row.names = FALSE)
+write.csv(annotationsList$TF3, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/annotation_5.csv", row.names = FALSE)
+write.csv(annotationsList$F17, "/Volumes/ALSPAC/data/genomics/B3421/methylation/B3421/grimAge_ALSPAC/Input/annotation_7.csv", row.names = FALSE)
 
+# On eddie:
+# write.csv(annotationsList$cord, "/exports/eddie/scratch/s1211670/ALSPAC/annotation/annotation_0.csv", row.names = FALSE)
+# write.csv(annotationsList$F7, "/exports/eddie/scratch/s1211670/ALSPAC/annotation/annotation_7.csv", row.names = FALSE)
+# write.csv(annotationsList$TF3, "/exports/eddie/scratch/s1211670/ALSPAC/annotation/annotation_15.csv", row.names = FALSE)
+# write.csv(annotationsList$F17, "/exports/eddie/scratch/s1211670/ALSPAC/annotation/annotation_17.csv", row.names = FALSE)
 
 
