@@ -16,10 +16,10 @@ DNA methylation ages calculated include:
 -  DNAm estimate of smoking pack years(DNAmPACKYRS) (Lu et al., 2019a)
 
 ALSPAC participants (n = ~900) had DNA methylation measured in umbilical cord blood and peripheral blood from age 7 year, and age 15 or 17 years clinic visits using Illumina Infinium HumanMethylation450 BeadChip (450 K) array (Relton et al., 2015). Final sample sizes for DNA methylation ages are:
-- age 0 years: n = X
-- age 7 years: n = X
-- age 15 years: n = X
-- age 17 years: n = X
+- age 0 years: n = 906
+- age 7 years: n = 971
+- age 15 years: n = 718
+- age 17 years: n = 254
 
 ## Calculate DNA methylation age and age acceleration in ALSPAC
 ### 1. Make conda environment
@@ -43,35 +43,35 @@ conda activate ./env
 /Applications/RStudio.app/Contents/MacOS/RStudio & 
 
 # Once in R studio check R.home() and .libPaths() point to the conda environment
-
 ```
 
 ### 3. Prep files for DNA methylation age calculator
-Source `Scripts/DNAm_prep.R` to create compressed csv files to upload to the DNA methylation age calculator.
+Source `Scripts/DNAm_prep.R` to create compressed csv files to upload to the DNA methylation age calculator. You may need to change relative paths in this script to wherever the ALSPAC server is mapped to on your computer. *If it takes too long on your local computer please see `Scripts/eddie.md` for running this script on Eddie.*
 Briefly, this script:
 1. Reads in DNAm betas from "ALSPAC/data/genomics/B3421/methylation/B3421/betas/data.Robj"
-2. Subsets CpGs to those used by the DNA methylation age calculator listed in "datMiniAnnotation3.csv" (https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/datMiniAnnotation3.csv). There is 30,084 CpGs in datMiniAnnotation3.csv. ALSPAC contains XXX of these CpGs. For the remaining CpGs with no data in ALSPAC have rows filled in with NA, as specified by the tutorial.
+2. Subsets CpGs to those used by the DNA methylation age calculator listed in "datMiniAnnotation3.csv" (https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/datMiniAnnotation3.csv). There is 30,084 CpGs in datMiniAnnotation3.csv. ALSPAC contains 28,463 of these CpGs. For the remaining CpGs with no data in ALSPAC have rows filled in with NA, as specified by the tutorial.
 3. Saves zip compressed csv files for each DNAm collection time point (birth, age 7, 15 and 17 years). In these files each row is a CpG and each column is a participant.
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_0.zip
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_7.zip
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_15.zip
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_17.zip
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_0.zip`
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_7.zip`
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_15.zip`
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_17.zip`
     
-4. Creates annotation files (.csv) for each respective beta file. These contain column names: Subject, Age, Female for each participant. Each row is a participant.
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_0.csv
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_7.csv
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_15.csv
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_17.csv
+4. Creates annotation files (.csv) for each respective beta file. These contain column names: Subject, Age, Female for each participant. Each row is a participant (in the same order as the columns in the beta files).
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_0.csv`
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_7.csv`
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_15.csv`
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/annotation_17.csv`
 
 ### 4. Upload csv files to DNA methylation age online calculator
 Create an account to submit methylation data (https://dnamage.genetics.ucla.edu/new). Upload zip compressed csv files. **Check the boxes which say "Normalize Data" and "Advanced Analysis"** - see tutorial doc (link at top) for more info on this. Upload corresponding age annotation file. An email is sent when analysis has run with a file for DNA methylation ages and age acceleration values, see the tutorial document for details on output.
-I saved the output to:
-    - ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/
+Output saved to:
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_*.csv`
 
 ### 5. Calculate age acceleration using additional covariates (cell count estimates)
-`AgeAccelerationResidual=residuals(lm(DNAmAge~Age))`
-Output saved in:
-`ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/`
+Cell count esimates were calculated using methods from Houseman et al. (2012). Run `Scripts/age_acceleration.R` to calculate age acceleration (`AgeAccelerationResidual = residuals(lm(DNAmAge~Age + WBC estimates))`). These residuals are saved as an additonal column called XXX.
+
+Output saved to:
+    - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_acceleration_*.csv`
 
 ## References
 - Horvath S (2013) DNA methylation age of human tissues and cell types. Genome Biol
