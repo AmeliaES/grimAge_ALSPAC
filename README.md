@@ -68,7 +68,7 @@ Output saved to:
     - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_*.csv`
 
 ### 5. Calculate age acceleration using additional covariates (cell count estimates)
-Cell count esimates were calculated using methods from Houseman et al. (2012). Run `Scripts/age_acceleration.R` to calculate age acceleration (`AgeAccelerationResidual = residuals(lm(DNAmAge~Age + WBC estimates))`). These residuals are saved as an additonal column called XXX.
+Cell count esimates were calculated using methods from Houseman et al. (2012). Run `Scripts/age_acc.R` to calculate age acceleration (`AgeAccelerationResidual = residuals(lm(DNAmAge~Age + WBC estimates))`). These residuals are saved as an additonal column called "DNAmGrimAgeAdjWBCAge.
 
 Output saved to:
     - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Output/scores_acceleration_*.csv`
