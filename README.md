@@ -47,8 +47,8 @@ conda activate ./env
 ### 3. Prep files for DNA methylation age calculator
 Source `Scripts/DNAm_prep.R` to create compressed csv files to upload to the DNA methylation age calculator. You may need to change relative paths in this script to wherever the ALSPAC server is mapped to on your computer. *If it takes too long on your local computer please see `Scripts/eddie.md` for running this script on Eddie.*
 Briefly, this script:
-1. Reads in DNAm betas from "ALSPAC/data/genomics/B3421/methylation/B3421/betas/data.Robj"
-2. Subsets CpGs to those used by the DNA methylation age calculator listed in "datMiniAnnotation3.csv" (https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/datMiniAnnotation3.csv). There is 30,084 CpGs in datMiniAnnotation3.csv. ALSPAC contains 28,463 of these CpGs. For the remaining CpGs with no data in ALSPAC have rows filled in with NA, as specified by the tutorial.
+1. Reads in DNAm betas from `ALSPAC/data/genomics/B3421/methylation/B3421/betas/data.Robj`
+2. Subsets CpGs to those used by the DNA methylation age calculator listed in `datMiniAnnotation3.csv`(https://dnamage.genetics.ucla.edu/sites/all/files/tutorials/datMiniAnnotation3.csv). There is 30,084 CpGs in datMiniAnnotation3.csv. ALSPAC contains 28,463 of these CpGs. For the remaining CpGs with no data in ALSPAC have rows filled in with NA, as specified by the tutorial.
 3. Saves zip compressed csv files for each DNAm collection time point (birth, age 7, 15 and 17 years). In these files each row is a CpG and each column is a participant.
     - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_0.zip`
     - `ALSPAC/data/genomics/B3421/methylation/B3421/grimage_ALSPAC/Input/betas_7.zip`
